@@ -75,13 +75,13 @@ public class Sorgular extends JFrame {
         contentPane.add(bilgiler_panel);
         bilgiler_panel.setLayout(null);
 
-        // JScrollPane oluştur ve tabloyu bu JScrollPane içine yerleştir
+        
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setBounds(0, 48, 668, 112);
         bilgiler_panel.add(scrollPane);
         bilgiler_panel.setVisible(false);
 
-        // JTable'ı JScrollPane içine yerleştir
+   
         table = new JTable();
         table.setModel(new DefaultTableModel(
         	new Object[][] {
@@ -112,19 +112,18 @@ public class Sorgular extends JFrame {
         	         
         	            String arananIsim = aratma_textbox.getText();
 
-        	            // Sorguyu hazırla
+        	       
         	            String sorgu = "SELECT * FROM bilgiler WHERE isim LIKE ?";
         	            PreparedStatement preparedStatement = baglanti.prepareStatement(sorgu);
         	            preparedStatement.setString(1, "%" + arananIsim + "%");
 
-        	            // Sorguyu çalıştır ve sonuçları al
         	            ResultSet resultSet = preparedStatement.executeQuery();
 
-        	            // Tabloyu temizle
+        	         
         	            DefaultTableModel model = (DefaultTableModel) table.getModel();
         	            model.setRowCount(0);
 
-        	            // Sonuçları tabloya ekle
+        	           
         	            while (resultSet.next()) {
         	                Object[] row = new Object[7]; // 7 sütun var
         	                for (int i = 0; i < 7; i++) {
