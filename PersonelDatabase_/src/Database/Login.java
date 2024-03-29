@@ -178,12 +178,11 @@ public class Login extends JFrame {
                     	
                     	
                     	
-                        // Kullanıcı veritabanında yoksa, "bilgiler" adındaki tabloya kaydet
                         String createTableQuery = "CREATE TABLE IF NOT EXISTS bilgiler (username VARCHAR(50), password VARCHAR(50))";
                         Statement createTableStatement = baglanti.createStatement();
                         createTableStatement.executeUpdate(createTableQuery);
 
-                        // Şimdi kullanıcı bilgilerini ekleyebiliriz
+                      
                         String insertQuery = "INSERT INTO bilgiler (username, password) VALUES (?, ?)";
                         PreparedStatement preparedStatement = baglanti.prepareStatement(insertQuery);
                         preparedStatement.setString(1, kullaniciAd);
@@ -199,8 +198,7 @@ public class Login extends JFrame {
                     else {
                         JOptionPane.showMessageDialog(null, "Bu kullanıcı mevcut. Başka bir isim giriniz.", "Dikkat!", JOptionPane.ERROR_MESSAGE);
                     }
-                    
-                    // Bağlantıyı kapat
+                
                     baglanti.close();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
