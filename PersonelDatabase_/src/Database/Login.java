@@ -93,7 +93,7 @@ public class Login extends JFrame {
                 
                 try {
                     Connection baglanti = Connection();
-                    String sorgu = "SELECT COUNT(*) AS giris FROM new_table WHERE username = ? AND password = ?";
+                    String sorgu = "SELECT COUNT(*) AS giris FROM bilgiler WHERE username = ? AND password = ?";
                     PreparedStatement statement = baglanti.prepareStatement(sorgu);
                     statement.setString(1, kullaniciadi);
                     statement.setString(2, sifre);
@@ -153,60 +153,65 @@ public class Login extends JFrame {
         JButton Kayit_btn = new JButton("Kayıt Ol");
         Kayit_btn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	   String kullaniciAdi = kayit_kullanici_txt.getText();
-                   String sifre = new String(kayit_sifre_txt.getPassword());
+                String kullaniciAd = kayit_kullanici_txt.getText();
+                String sifre = new String(kayit_sifre_txt.getPassword());
 
-                   try {
-                       Connection baglanti = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "1187");
+                try {
+                    Connection baglanti = DriverManager.getConnection("jdbc:mysql://localhost:3306/personel_mudur", "root", "1187");
+                   
 
-                       DatabaseMetaData meta = baglanti.getMetaData();
-                       ResultSet rs = meta.getCatalogs();
-                       boolean kullaniciVar = false;
-                       while (rs.next()) {
-                           String dbName = rs.getString(1);
-                           if (dbName.equals(kullaniciAdi)) {
-                               kullaniciVar = true;
-                               break;
-                           }
-                       }
-                       rs.close();
 
-                       if (kullaniciVar) {
-                           JOptionPane.showMessageDialog(null, "Bu kullanıcı mevcut. Başka bir isim giriniz.", "Dikkat!", JOptionPane.ERROR_MESSAGE);
-                       } else {
-                           String sorgu = "CREATE DATABASE " + kullaniciAdi;
-                           Statement statement = baglanti.createStatement();
-                           statement.executeUpdate(sorgu);
+                    DatabaseMetaData meta = baglanti.getMetaData();
+                    ResultSet rs = meta.getCatalogs();
+                    boolean kullaniciVar = false;
+                    while (rs.next()) {
+                        String dbName = rs.getString(1);
+                        if (dbName.equals(kullaniciAd)) {
+                            kullaniciVar = true;
+                            break;
+                        }
+                    }
+                    rs.close();
 
-                           // Yeni tabloyu oluştur
-                           String tabloSorgu = "CREATE TABLE " + kullaniciAdi + ".rehberim (" +
-                                   "isim VARCHAR(255)," +
-                                   "telefon VARCHAR(20)" +
-                                   ")";
-                           statement.executeUpdate(tabloSorgu);
+                    if (!kullaniciVar) {
+                    
+                    	
+                    	
+                    	
+                        // Kullanıcı veritabanında yoksa, "bilgiler" adındaki tabloya kaydet
+                        String createTableQuery = "CREATE TABLE IF NOT EXISTS bilgiler (username VARCHAR(50), password VARCHAR(50))";
+                        Statement createTableStatement = baglanti.createStatement();
+                        createTableStatement.executeUpdate(createTableQuery);
 
-                           JOptionPane.showMessageDialog(null, "Kayıt Başarılı. Ana Sayfaya yönlendiriliyorsunuz.");
+                        // Şimdi kullanıcı bilgilerini ekleyebiliriz
+                        String insertQuery = "INSERT INTO bilgiler (username, password) VALUES (?, ?)";
+                        PreparedStatement preparedStatement = baglanti.prepareStatement(insertQuery);
+                        preparedStatement.setString(1, kullaniciAd);
+                        preparedStatement.setString(2, sifre);
+                        preparedStatement.executeUpdate();
 
-                           setVisible(false);
-                           statement.close();
-                           HomePage homePage = new HomePage(kullaniciAdi);
-                         
-                           homePage.setVisible(true);
-                       }
-
-                       baglanti.close();
-                   } catch (SQLException ex) {
-                       JOptionPane.showMessageDialog(null, "Hata: " + ex.getMessage(), "Hata", JOptionPane.ERROR_MESSAGE);
-                   }
+                        JOptionPane.showMessageDialog(null, "Kayıt başarıyla tamamlandı.", "Bilgi", JOptionPane.INFORMATION_MESSAGE);
+                        setVisible(false);
+                        
+                        HomePage homePage = new HomePage(kullaniciAd);
+                        homePage.setVisible(true);
+                    } 
+                    else {
+                        JOptionPane.showMessageDialog(null, "Bu kullanıcı mevcut. Başka bir isim giriniz.", "Dikkat!", JOptionPane.ERROR_MESSAGE);
+                    }
+                    
+                    // Bağlantıyı kapat
+                    baglanti.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Veritabanına bağlanırken bir hata oluştu.", "Hata", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
+
         Kayit_btn.setBounds(215, 191, 85, 21);
         panel_2.add(Kayit_btn);
-
-        JLabel resim = new JLabel(new ImageIcon(getClass().getResource("resim.jpg")));
-        resim.setBounds(555, 10, 123, 75);
-        contentPane.add(resim);
         setSize(702, 501); 
 
         setResizable(false); 
