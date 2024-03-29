@@ -26,6 +26,7 @@ public class Sorgular extends JFrame {
     private JLabel lblNewLabel;
     private JTable table;
     private JLabel lblNewLabel_1;
+    private String name;
 
     /**
      * Launch the application.
@@ -34,7 +35,7 @@ public class Sorgular extends JFrame {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    Sorgular frame = new Sorgular();
+                    Sorgular frame = new Sorgular("e");
                     frame.setVisible(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -51,7 +52,8 @@ public class Sorgular extends JFrame {
     
     
     
-    public Sorgular() {
+    public Sorgular(String isim) {
+    	name=isim;
     	
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 712, 493);
